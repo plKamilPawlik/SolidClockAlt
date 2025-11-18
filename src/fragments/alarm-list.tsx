@@ -75,11 +75,8 @@ function AlarmCard(props: { alarm: Alarm }) {
 
 function EditDialog(props: { alarm: Alarm; ref: HTMLDialogElement }) {
 	// component logic
-	let form!: HTMLFormElement;
-
-	const editAlarm = (name: string, time: string): void => {
+	const submit = (name: string, time: string): void => {
 		alarm$.update(props.alarm.id, name, time);
-		form.submit();
 	};
 
 	// component layout
@@ -89,10 +86,10 @@ function EditDialog(props: { alarm: Alarm; ref: HTMLDialogElement }) {
 				<AlarmEdit
 					defaultName={props.alarm.Name}
 					defaultTime={props.alarm.Time}
-					handleSubmit={editAlarm}
+					handleSubmit={submit}
 				/>
 				<div class="modal-action">
-					<form method="dialog" ref={form}>
+					<form method="dialog">
 						<button class="btn btn-soft" type="submit">
 							Close
 						</button>

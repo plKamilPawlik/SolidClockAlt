@@ -1,55 +1,58 @@
-import { createStore, produce } from "solid-js/store";
+import { createStore } from "solid-js/store";
 import { Alarm } from "./api/alarm";
 
 export const [get, set] = createStore<{
 	alarms: Alarm[];
+	unique: Map<symbol, Alarm>;
 }>({
 	alarms: [],
+	unique: new Map(),
 });
 
 export const alarm$ = {
 	get,
 	create(name: string, time: string): void {
-		set(
-			produce((state) => {
-				state.alarms.push(new Alarm(name, time));
-				state.alarms.sort();
-			}),
-		);
+		set("alarms", () => {
+			const alarm = new Alarm(name, time);
+			get.unique.set(alarm.id, alarm);
+
+			return [...get.unique.values()].sort();
+		});
 	},
 	delete(id: symbol): void {
-		set(
-			produce((state) => {
-				state.alarms.find((alarm) => alarm.id === id)?.clear();
-				state.alarms = state.alarms.filter((alarm) => alarm.id !== id);
-			}),
-		);
+		set("alarms", () => {
+			if (get.unique.has(id)) {
+				get.unique.get(id)!.clear();
+				get.unique.delete(id);
+			}
+
+			return [...get.unique.values()].sort();
+		});
 	},
 	update(id: symbol, name: string, time: string): void {
-		set(
-			produce((state) => {
-				const alarm = state.alarms.find((alarm) => alarm.id === id);
+		set("alarms", () => {
+			if (get.unique.has(id)) {
+				get.unique.get(id)!.Name = name;
+				get.unique.get(id)!.Time = time;
+			}
 
-				if (alarm) {
-					alarm.Name = name;
-					alarm.Time = time;
-					state.alarms.sort();
-				}
-			}),
-		);
+			return [...get.unique.values()].sort();
+		});
 	},
 	toggle(id: symbol): void {
-		set(
-			produce((state) => {
-				const alarm = state.alarms.find((alarm) => alarm.id === id);
+		set("alarms", () => {
+			const alarm = get.unique.get(id);
 
-				switch (alarm?.Active) {
-					case true:
-						return alarm.clear();
-					case false:
-						return alarm.schedule();
-				}
-			}),
-		);
+			switch (alarm?.Active) {
+				case true:
+					alarm.clear();
+					break;
+				case false:
+					alarm.schedule();
+					break;
+			}
+
+			return [...get.unique.values()].sort();
+		});
 	},
 } as const;
