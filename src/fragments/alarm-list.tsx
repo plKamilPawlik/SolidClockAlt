@@ -8,7 +8,7 @@ export function AlarmList() {
 	// component layout
 	return (
 		<ul class="flex flex-col gap-4">
-			{alarm$.get.list.map((alarm) => (
+			{alarm$.get.alarms.map((alarm) => (
 				<AlarmCard alarm={alarm} />
 			))}
 		</ul>
@@ -25,9 +25,13 @@ function AlarmCard(props: { alarm: Alarm }) {
 
 	const editAlarm = (): void => {};
 
+	const toggleAlarm = (): void => {
+		alarm$.toggle(props.alarm.id);
+	};
+
 	// component layout
 	return (
-		<li class="bg-base-200 drop-shadow-lg">
+		<li class="stats bg-base-200 drop-shadow-lg">
 			<div class="stat">
 				<p class="stat-title">{props.alarm.Name}</p>
 				<p class="stat-value">
@@ -35,7 +39,12 @@ function AlarmCard(props: { alarm: Alarm }) {
 				</p>
 				<div class="stat-actions flex justify-end gap-2">
 					<label class="label mr-auto">
-						<input checked class="toggle toggle-success" type="checkbox" />
+						<input
+							checked={props.alarm.Active}
+							class="toggle toggle-success"
+							type="checkbox"
+							on:change={toggleAlarm}
+						/>
 						Active
 					</label>
 					<button

@@ -1,6 +1,7 @@
 export class Alarm {
 	readonly id: symbol;
 
+	private isActive = false;
 	private hours24!: number;
 	private minutes!: number;
 	private timeout?: number;
@@ -13,6 +14,10 @@ export class Alarm {
 		this.Name = name;
 		this.Time = time;
 		this.schedule();
+	}
+
+	get Active(): boolean {
+		return this.isActive;
 	}
 
 	get Name(): string {
@@ -33,18 +38,9 @@ export class Alarm {
 		this.minutes = Number.parseInt(time.slice(3, 5), 10);
 	}
 
-	alarm(): void {
-		this.alert();
-		this.clear();
-		this.schedule();
-	}
-
-	alert(): void {
-		alert(`Alarm! [${this.name}]`);
-	}
-
 	clear(): void {
 		clearTimeout(this.timeout);
+		this.isActive = false;
 	}
 
 	schedule(): void {
@@ -61,9 +57,20 @@ export class Alarm {
 
 		const delayMS = targetDate.getTime() - Date.now();
 		this.timeout = setTimeout(() => this.alarm(), delayMS);
+		this.isActive = true;
 	}
 
 	toString(): string {
 		return `${this.time} - ${this.name}`;
+	}
+
+	private alarm(): void {
+		this.alert();
+		this.clear();
+		this.schedule();
+	}
+
+	private alert(): void {
+		alert(`Alarm! [${this.name}]`);
 	}
 }
