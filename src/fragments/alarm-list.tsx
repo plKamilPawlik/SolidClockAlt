@@ -1,6 +1,7 @@
 import { MaterialSymbol } from "~/components/material-symbol";
 import { alarm$ } from "~/providers/alarm";
 import type { Alarm } from "~/providers/api/alarm";
+import { AlarmEdit } from "./alarm-edit";
 
 export function AlarmList() {
 	// component logic
@@ -17,21 +18,25 @@ export function AlarmList() {
 
 function AlarmCard(props: { alarm: Alarm }) {
 	// component logic
+	let dialog!: HTMLDialogElement;
+
 	const deleteAlarm = (): void => {
 		if (confirm("Are you sure you want to permanently delete this alarm?")) {
 			alarm$.delete(props.alarm.id);
 		}
 	};
 
-	const editAlarm = (): void => {};
-
 	const toggleAlarm = (): void => {
 		alarm$.toggle(props.alarm.id);
 	};
 
+	const openDialog = (): void => {
+		dialog.showModal();
+	};
+
 	// component layout
 	return (
-		<li class="stats bg-base-200 drop-shadow-lg">
+		<li>
 			<div class="stat">
 				<p class="stat-title">{props.alarm.Name}</p>
 				<p class="stat-value">
@@ -57,12 +62,43 @@ function AlarmCard(props: { alarm: Alarm }) {
 					<button
 						class="btn btn-info btn-square btn-soft btn-sm"
 						type="button"
-						on:click={editAlarm}
+						on:click={openDialog}
 					>
 						<MaterialSymbol name="edit_note" />
 					</button>
 				</div>
+				<EditDialog alarm={props.alarm} ref={dialog} />
 			</div>
 		</li>
+	);
+}
+
+function EditDialog(props: { alarm: Alarm; ref: HTMLDialogElement }) {
+	// component logic
+	let form!: HTMLFormElement;
+
+	const editAlarm = (name: string, time: string): void => {
+		alarm$.update(props.alarm.id, name, time);
+		form.submit();
+	};
+
+	// component layout
+	return (
+		<dialog class="modal" ref={props.ref}>
+			<div class="modal-box">
+				<AlarmEdit
+					defaultName={props.alarm.Name}
+					defaultTime={props.alarm.Time}
+					handleSubmit={editAlarm}
+				/>
+				<div class="modal-action">
+					<form method="dialog" ref={form}>
+						<button class="btn btn-soft" type="submit">
+							Close
+						</button>
+					</form>
+				</div>
+			</div>
+		</dialog>
 	);
 }

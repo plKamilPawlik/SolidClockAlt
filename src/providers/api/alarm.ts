@@ -34,8 +34,10 @@ export class Alarm {
 
 	set Time(time: string) {
 		this.clear();
+		this.time = time;
 		this.hours24 = Number.parseInt(time.slice(0, 2), 10);
 		this.minutes = Number.parseInt(time.slice(3, 5), 10);
+		this.schedule();
 	}
 
 	clear(): void {
