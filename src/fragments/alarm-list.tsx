@@ -36,7 +36,7 @@ function AlarmCard(props: { alarm: Alarm }) {
 
 	// component layout
 	return (
-		<li>
+		<li class="stats bg-base-200 shadow-lg">
 			<div class="stat">
 				<p class="stat-title">{props.alarm.Name}</p>
 				<p class="stat-value">

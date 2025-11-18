@@ -1,3 +1,5 @@
+import iphone_alarm from "~/assets/iphone_alarm.mp3";
+
 export class Alarm {
 	readonly id: symbol;
 
@@ -73,6 +75,12 @@ export class Alarm {
 	}
 
 	private alert(): void {
-		alert(`Alarm! [${this.name}]`);
+		const audio = new Audio(iphone_alarm);
+		audio.loop = true;
+		audio.addEventListener("canplay", () => {
+			audio.play();
+			alert(`${this}`);
+			audio.pause();
+		});
 	}
 }
